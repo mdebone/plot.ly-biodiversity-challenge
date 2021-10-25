@@ -1,110 +1,35 @@
-function init() {
-    // Point to the dropdown select element
-    var dropdownMenu = d3.select("#selDataset");
+var data = [
+    {
+      type: "indicator",
+      mode: "gauge+number+delta",
+      value: 420,
+      title: { text: "Speed", font: { size: 24 } },
+      delta: { reference: 400, increasing: { color: "RebeccaPurple" } },
+      gauge: {
+        axis: { range: [null, 500], tickwidth: 1, tickcolor: "darkblue" },
+        bar: { color: "darkblue" },
+        bgcolor: "white",
+        borderwidth: 2,
+        bordercolor: "gray",
+        steps: [
+          { range: [0, 250], color: "cyan" },
+          { range: [250, 400], color: "royalblue" }
+        ],
+        threshold: {
+          line: { color: "red", width: 4 },
+          thickness: 0.75,
+          value: 490
+        }
+      }
+    }
+  ];
   
-    // Populate the options with the sample json names
-    d3.json("data/samples.json").then((data) => {
-      var names = data.names;
-  
-      names.forEach((culture) => {
-        dropdownMenu
-          .append("option")
-          .text(culture)
-          .property("value", culture);
-        })
-  
-      // Use this id to culture build chart plots
-      var cultureInfo = names[0];
-      createCharts(cultureInfo);
-      populateMetaData(cultureInfo);
-    });
+  var layout = {
+    width: 500,
+    height: 400,
+    margin: { t: 25, r: 25, l: 25, b: 25 },
+    paper_bgcolor: "lavender",
+    font: { color: "darkblue", family: "Arial" }
   };
   
-  // This function is called when a dropdown menu item is selected
-  function updatePlotly(newCulture) {
-    createCharts(newCulture);
-    populateMetaData(newCulture);
-  };
-  
-  function populateMetaData(culture) {
-    d3.json("data/samples.json").then((data) => {
-      var metadata = data.metadata;
-      console.log(metadata);
-  
-      // filter culture metadata
-      var populateArray = metadata.filter(cultureObj => cultureObj.id == culture);
-      var cultureReturn = populateArray[0];
-      // use d3 to select the panel
-      var pandelInfo = d3.select("#sample-metadata");
-  
-      // clear existing data 
-      pandelInfo.html("");
-  
-      //
-      Object.entries(cultureReturn).forEach(([key, value]) => {
-        pandelInfo.append("h6").text(`${key}: ${value}`);
-      });
-    });
-  }
-  
-  function createCharts(culture) {
-    d3.json("data/samples.json").then((data) => {
-      var cultureInfo = data.samples;
-      var populateArray = cultureInfo.filter(cultureObj => cultureObj.id == culture);
-      var cultureReturn = populateArray[0];
-  
-      var sample_values = cultureReturn.sample_values;
-      var otu_ids = cultureReturn.otu_ids;
-      var otu_labels = cultureReturn.otu_labels;
-  
-      // Create the horizontal bar chart
-      // Sort the data by culture results descending
-      // Reverse the array to accommodate Plotly's defaults
-      var sortedByCulture = otu_ids.slice((0,10)).map(otuIds => `otu ${otuIds}`).reverse();
-      var cultureBarData = [
-        {
-          y: sortedByCulture,
-          x: sample_values.slice(0,10).reverse(),
-          text: otu_labels.slice(0,10).reverse(),
-          name: "OTUs",
-          type: "bar",
-          orientation: "h"
-        }
-      ];
-      var traceCulture = [cultureBarData];
-  
-      var barLayout = {
-        title: "Top Ranked OTU Cultures",
-        margin: {
-          l:150,
-          t:25
-        }
-      };
-  
-      Plotly.newPlot("bar", traceCulture, barLayout);
-  
-      // Create the bubble chart
-      var cultureBubbleData = {
-        x: otu_ids,
-        y: sample_values,
-        text: otu_labels,
-        mode: 'markers',
-        marker: {
-          color: otu_ids,
-          size: sample_values,
-        }
-      }; 
-  
-      var traceCulture2 = [cultureBubbleData];
-  
-      var bubbleLayout = {
-        title: "Weighed OTUs by Frequency",
-        xaxis: {title: "OTU ID"}
-      };
-  
-      Plotly.newPlot("bubble", traceCulture2, bubbleLayout);
-    });
-  };
-  
-  // Initialize dashboard
-    init()
+  Plotly.newPlot('myDiv', data, layout);
