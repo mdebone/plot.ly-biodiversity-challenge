@@ -6,3 +6,5 @@ Also, for whatever reason, I had not noticed that the plots.js was nested inside
 
 So all that is resolved, I have an uncaught reference error that the 'optionChanged' is not defined at HTML select element on change. I didn't think that I need to change it, but I guess I clearly do.
 And I have no idea why I would have an unchecked runtime error, butit says it all the same, index.html.1
+
+Made a copy of everything that was sort of working before trying to fix everything, added that and a plotly gauge template that I will try to get working as a seperate app.js
