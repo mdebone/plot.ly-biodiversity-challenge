@@ -15,3 +15,8 @@ Nor can I get the event listener to work for the onchange event whenever a drop 
 But I can't get the indicator to work, Ive read the w3 documentation, Ive google'd Ive gone thru youtube videos on poltly but while I get what is going on in those I can't seem to replicate it in my own.
 I want to change the onchange event in the html but I am not sure if that is allowed, it makes more sense to have an on click listener, but ehh I'm sort of frustrated with this.
 Need some space and to let the new info settle and I will revisit.
+
+20 mins later...
+
+So im an idiot, there was a pair of square brackets rather than curly that were causing the issue. Its now horizontal bar chart is now populating with the default data. Success!
+now I need to figure out the event listerner and why it wont change from the default when a new one is selected.

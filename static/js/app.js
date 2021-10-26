@@ -35,7 +35,7 @@ function populateMetaData(culture) {
     // clear existing data 
     pandelInfo.html("");
 
-    //
+    // for when the sample changes
     Object.entries(cultureReturn).forEach(([key, value]) => {
       pandelInfo.append("h6").text(`${key}: ${value}`);
     });
@@ -57,16 +57,15 @@ function createCharts(culture) {
     // Sort the data by culture results descending
     // Reverse the array to accommodate Plotly's defaults
     //var sortedByCulture = otu_ids.slice((0,10)).map(otuIds => `otu ${otuIds}`).reverse();
-    var cultureBarData = [
-      {
-        y: otu_ids.slice(0,10).map(otuIds => `otu ${otuIds}`).reverse(),
+    var cultureBarData = {
+        y: otu_ids.slice(0,10).map(otuIds => `OTU ${otuIds}`).reverse(),
         x: sample_values.slice(0,10).reverse(),
         text: otu_labels.slice(0,10).reverse(),
         //name: "OTUs",
         type: "bar",
         orientation: "h",
-      }
-    ];
+      
+    };
     var traceCulture = [cultureBarData];
 
     var barLayout = {
