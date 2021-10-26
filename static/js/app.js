@@ -1,116 +1,162 @@
+// select the user input field
+var idSelect = d3.select("#selDataset");
+
+// select the demographic info div's ul list group
+var demographicsTable = d3.select("#sample-metadata");
+
+// select the bar chart div
+var barChart = d3.select("#bar");
+
+// select the bubble chart div
+var bubbleChart = d3.select("bubble");
+
+// select the gauge chart div
+var gaugeChart = d3.select("gauge");
+
 function init() {
-    // Point to the dropdown select element
-    var dropdownMenu = d3.select("#selDataset");
-  
-    // Populate the options with the sample json 'names'
-    d3.json("data/samples.json").then((data) => {
-      var names = data.names;
-  
-      names.forEach((culture) => {
-        dropdownMenu
-          .append("option")
-          .text(culture)
-          .property("value", culture);
-        })
-  
-      // Use this id to build culture chart plots
-      var cultureInfo = names[0];
-      createCharts(cultureInfo);
-      populateMetaData(cultureInfo);
-    });
-  };
-  
-  function populateMetaData(culture) {
-    d3.json("data/samples.json").then((data) => {
-      var metadata = data.metadata;
-      console.log(metadata);
-  
-      // filter culture metadata
-      var populateArray = metadata.filter(cultureObj => cultureObj.id == culture);
-      var cultureReturn = populateArray[0];
-      // use d3 to select the panel
-      var pandelInfo = d3.select("#sample-metadata");
-  
-      // clear existing data 
-      pandelInfo.html("");
-  
-      //
-      Object.entries(cultureReturn).forEach(([key, value]) => {
-        pandelInfo.append("h6").text(`${key}: ${value}`);
-      });
-    });
-  }
-  
-  function createCharts(culture) {
-    d3.json("data/samples.json").then((data) => {
-      var cultureInfo = data.samples;
-      var populateArray = cultureInfo.filter(cultureObj => cultureObj.id == culture);
-      var cultureReturn = populateArray[0];
-  
-      // these probably need to be empty lists
-      var sample_values = [];
-      var otu_ids = [];
-      var otu_labels = [];
+  // Point to the dropdown select element
+  var dropdownMenu = d3.select("#selDataset");
 
-       
-      var topTenSampleValues = cultureReturn.sample_values.slice(0,10).reverse();
-      var topTenOtuIds = cultureReturn.otu_ids.slice(0,10).reverse();
-      var topTenOtuLabels = cultureReturn.otu_labels.slice(0,10).reverse();
-  
-      // Create the horizontal bar chart
-      // Sort the data by culture results descending
-      // Reverse the array to accommodate Plotly's defaults
-      var sortedByCulture = topTenOtuIds.map(otuIds => `OTU ${otuIds}`);
-      var cultureBarData = [
-        {
-          y: sortedByCulture,
-          x: topTenSampleValues,
-          text: topTenOtuLabels,
-          name: "OTUs",
-          type: "bar",
-          orientation: "h"
-        }
-      ];
-      var traceCulture = [cultureBarData];
-  
-      var barLayout = {
-        title: "Top Ranked OTU Cultures",
-        margin: {
-          l:150,
-          t:25
-        }
-      };
-  
-      Plotly.newPlot("bar", traceCulture, barLayout);
-  
-      // Create the bubble chart
-      var cultureBubbleData = {
-        x: otu_ids,
-        y: sample_values,
-        text: otu_labels,
-        mode: 'markers',
-        marker: {
-          color: otu_ids,
-          size: sample_values,
-        }
-      }; 
-  
-      var traceCulture2 = [cultureBubbleData];
-  
-      var bubbleLayout = {
-        title: "Weighed OTUs by Frequency",
-        xaxis: {title: "OTU ID"}
-      };
-  
-      Plotly.newPlot("bubble", traceCulture2, bubbleLayout);
-    });
-  };
+  // Populate the options with the sample json names
+  d3.json("data/samples.json").then((data) => {
+    var names = data.names;
 
-    // This function is called when a dropdown menu item is selected
-    function updatePlotly(newCulture) {
-        createCharts(newCulture);
-        populateMetaData(newCulture);
-      };
-  
-  // Initialize dashboard
-    init()
+    names.forEach((culture) => {
+      dropdownMenu
+        .append("option")
+        .text(culture)
+        .property("value", culture);
+      })
+
+    // Use this id to culture build chart plots
+    var cultureInfo = names[0];
+    createCharts(cultureInfo);
+    populateMetaData(cultureInfo);
+  });
+};
+
+// This function is called when a dropdown menu item is selected
+//function updatePlotly(newCulture) {
+ // createCharts(newCulture);
+//  populateMetaData(newCulture);
+//};
+
+function populateMetaData(culture) {
+  d3.json("data/samples.json").then((data) => {
+    var metadata = data.metadata;
+    console.log(metadata);
+
+    // filter culture metadata
+    var populateArray = metadata.filter(cultureObj => cultureObj.id == culture);
+    var cultureReturn = populateArray[0];
+    // use d3 to select the panel
+    var pandelInfo = d3.select("#sample-metadata");
+
+    // clear existing data 
+    pandelInfo.html("");
+
+    //
+    Object.entries(cultureReturn).forEach(([key, value]) => {
+      pandelInfo.append("h6").text(`${key}: ${value}`);
+    });
+  });
+}
+
+function createCharts(culture) {
+  d3.json("data/samples.json").then((data) => {
+    var cultureInfo = data.samples;
+    var populateArray = cultureInfo.filter(cultureObj => cultureObj.id == culture);
+    var cultureReturn = populateArray[0];
+
+    var sample_values = cultureReturn.sample_values;
+    var otu_ids = cultureReturn.otu_ids;
+    var otu_labels = cultureReturn.otu_labels;
+
+    // Create the horizontal bar chart
+    // Sort the data by culture results descending
+    // Reverse the array to accommodate Plotly's defaults
+    var sortedByCulture = otu_ids.slice((0,10)).map(otuIds => `otu ${otuIds}`).reverse();
+    var cultureBarData = [
+      {
+        y: sortedByCulture,
+        x: sample_values.slice(0,10).reverse(),
+        text: otu_labels.slice(0,10).reverse(),
+        name: "OTUs",
+        type: "bar",
+        orientation: "h"
+      }
+    ];
+    var traceCulture = [cultureBarData];
+
+    var barLayout = {
+      title: "Top Ranked OTU Cultures",
+      margin: {
+        l:150,
+        t:25
+      }
+    };
+
+    Plotly.newPlot("bar", traceCulture, barLayout);
+
+    // Create the bubble chart
+    var cultureBubbleData = {
+      x: otu_ids,
+      y: sample_values,
+      text: otu_labels,
+      mode: 'markers',
+      marker: {
+        color: otu_ids,
+        size: sample_values,
+      }
+    }; 
+
+    var traceCulture2 = [cultureBubbleData];
+
+    var bubbleLayout = {
+      title: "Weighed OTUs by Frequency",
+      xaxis: {title: "OTU ID"}
+    };
+
+    Plotly.newPlot("bubble", traceCulture2, bubbleLayout);
+
+    var cultureGaugeData = {
+        domain: { x: [0,1], y: [0,1] },
+        value:  wfreq,
+        type: "indicator",
+        mode: "gauge",
+        gauge:  {
+            axis: { range: [0,9],
+                  tickmode: "linear",
+                  tickwidth: 1,
+                  tickcolor: "red", 
+                },
+                bar: { color: "darkblue" },
+                steps: [
+                  { range: [0, 1], color: "white" },
+                  { range: [1, 2], color: "whitebrown" },
+                  { range: [2, 3], color: "greybrown" },
+                  { range: [3, 4], color: "lightbrown" },
+                  { range: [4, 5], color: "brown" },
+                  { range: [5, 6], color: "greenbrown" },
+                  { range: [6, 7], color: "lightgreen" },
+                  { range: [7, 8], color: "green" },
+                  { range: [8, 9], color: "darkgreen" },
+                ],
+            },
+        title: { text: "Belly Button Washing Frequency", font: { size: 24 } },
+      
+      };  
+    
+      var traceCulture3 = [cultureGaugeData];
+
+      var gaugeLayout = {
+            width: 500,
+            height: 300,
+        };
+
+      Plotly.newPlot("gauge", traceCulture3, gaugeLayout);
+  });
+};
+
+// Initialize dashboard
+init()

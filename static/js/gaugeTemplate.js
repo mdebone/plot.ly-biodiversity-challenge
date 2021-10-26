@@ -12,8 +12,15 @@ var data = [
         borderwidth: 2,
         bordercolor: "gray",
         steps: [
-          { range: [0, 250], color: "cyan" },
-          { range: [250, 400], color: "royalblue" }
+          { range: [0, 1], color: "white" },
+          { range: [1, 2], color: "whitebrown" },
+          { range: [2, 3], color: "greybrown" },
+          { range: [3, 4], color: "lightbrown" },
+          { range: [4, 5], color: "brown" },
+          { range: [5, 6], color: "greenbrown" },
+          { range: [6, 7], color: "lightgreen" },
+          { range: [7, 8], color: "green" },
+          { range: [8, 9], color: "darkgreen" }
         ],
         threshold: {
           line: { color: "red", width: 4 },
