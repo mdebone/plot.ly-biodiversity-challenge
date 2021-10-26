@@ -1,18 +1,4 @@
-// select the user input field
-var idSelect = d3.select("#selDataset");
-
-// select the demographic info div's ul list group
-var demographicsTable = d3.select("#sample-metadata");
-
-// select the bar chart div
-var barChart = d3.select("#bar");
-
-// select the bubble chart div
-var bubbleChart = d3.select("bubble");
-
-// select the gauge chart div
-var gaugeChart = d3.select("gauge");
-
+// so it begins
 function init() {
   // Point to the dropdown select element
   var dropdownMenu = d3.select("#selDataset");
@@ -35,12 +21,6 @@ function init() {
   });
 };
 
-// This function is called when a dropdown menu item is selected
-//function updatePlotly(newCulture) {
- // createCharts(newCulture);
-//  populateMetaData(newCulture);
-//};
-
 function populateMetaData(culture) {
   d3.json("data/samples.json").then((data) => {
     var metadata = data.metadata;
@@ -60,7 +40,7 @@ function populateMetaData(culture) {
       pandelInfo.append("h6").text(`${key}: ${value}`);
     });
   });
-}
+};
 
 function createCharts(culture) {
   d3.json("data/samples.json").then((data) => {
@@ -71,19 +51,20 @@ function createCharts(culture) {
     var sample_values = cultureReturn.sample_values;
     var otu_ids = cultureReturn.otu_ids;
     var otu_labels = cultureReturn.otu_labels;
+    var wfreq = cultureReturn.wfreq;
 
     // Create the horizontal bar chart
     // Sort the data by culture results descending
     // Reverse the array to accommodate Plotly's defaults
-    var sortedByCulture = otu_ids.slice((0,10)).map(otuIds => `otu ${otuIds}`).reverse();
+    //var sortedByCulture = otu_ids.slice((0,10)).map(otuIds => `otu ${otuIds}`).reverse();
     var cultureBarData = [
       {
-        y: sortedByCulture,
+        y: otu_ids.slice(0,10).map(otuIds => `otu ${otuIds}`).reverse(),
         x: sample_values.slice(0,10).reverse(),
         text: otu_labels.slice(0,10).reverse(),
-        name: "OTUs",
+        //name: "OTUs",
         type: "bar",
-        orientation: "h"
+        orientation: "h",
       }
     ];
     var traceCulture = [cultureBarData];
@@ -119,31 +100,32 @@ function createCharts(culture) {
 
     Plotly.newPlot("bubble", traceCulture2, bubbleLayout);
 
+    // Create the Gauge Chart
     var cultureGaugeData = {
         domain: { x: [0,1], y: [0,1] },
         value:  wfreq,
         type: "indicator",
-        mode: "gauge",
+        mode: "gauge+indicator",
         gauge:  {
             axis: { range: [0,9],
                   tickmode: "linear",
                   tickwidth: 1,
-                  tickcolor: "red", 
+                  tickcolor: "black", 
                 },
-                bar: { color: "darkblue" },
-                steps: [
+            bar: { color: "black" },
+            steps: [
                   { range: [0, 1], color: "white" },
-                  { range: [1, 2], color: "whitebrown" },
-                  { range: [2, 3], color: "greybrown" },
-                  { range: [3, 4], color: "lightbrown" },
-                  { range: [4, 5], color: "brown" },
-                  { range: [5, 6], color: "greenbrown" },
-                  { range: [6, 7], color: "lightgreen" },
-                  { range: [7, 8], color: "green" },
-                  { range: [8, 9], color: "darkgreen" },
+                  { range: [1, 2], color: "rgb(235, 235, 224)" },
+                  { range: [2, 3], color: "rgb(224, 224, 209)" },
+                  { range: [3, 4], color: "rgb(204, 204, 179)" },
+                  { range: [4, 5], color: "rgb(173, 173, 133)" },
+                  { range: [5, 6], color: "rgb(128, 128, 0)" },
+                  { range: [6, 7], color: "rgb(96, 128, 0)" },
+                  { range: [7, 8], color: "rgb(68, 128, 0)" },
+                  { range: [8, 9], color: "rgb(34, 51, 0)" },
                 ],
             },
-        title: { text: "Belly Button Washing Frequency", font: { size: 24 } },
+        title: { text: "Belly Button Washing Frequency<br> Scrubs per Week", font: { size: 24 } },
       
       };  
     
@@ -156,6 +138,12 @@ function createCharts(culture) {
 
       Plotly.newPlot("gauge", traceCulture3, gaugeLayout);
   });
+};
+
+// This function is called when a dropdown menu item is selected
+function updatePlotly(newCulture) {
+    createCharts(newCulture);
+    populateMetaData(newCulture);
 };
 
 // Initialize dashboard
