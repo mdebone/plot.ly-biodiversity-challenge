@@ -1,5 +1,7 @@
 // so it begins
-function init() {
+//var my_filter  
+
+function init(id=940) {
   // Point to the dropdown select element
   var dropdownMenu = d3.select("#selDataset");
 
@@ -15,11 +17,13 @@ function init() {
       })
 
     // Use this id to culture build chart plots
-    var cultureInfo = names[0];
+    var cultureInfo = id;
     createCharts(cultureInfo);
     populateMetaData(cultureInfo);
   });
 };
+
+
 
 function populateMetaData(culture) {
   d3.json("data/samples.json").then((data) => {
@@ -113,7 +117,7 @@ function createCharts(culture) {
                 },
             bar: { color: "black" },
             steps: [
-                  { range: [0, 1], color: "white" },
+                  { range: [0, 1], color: "rgb(255, 255, 255)" },
                   { range: [1, 2], color: "rgb(235, 235, 224)" },
                   { range: [2, 3], color: "rgb(224, 224, 209)" },
                   { range: [3, 4], color: "rgb(204, 204, 179)" },
@@ -136,6 +140,8 @@ function createCharts(culture) {
         };
 
       Plotly.newPlot("gauge", traceCulture3, gaugeLayout);
+
+
   });
 };
 
@@ -144,6 +150,13 @@ function updatePlotly(newCulture) {
     createCharts(newCulture);
     populateMetaData(newCulture);
 };
+function changeEverything(){
+    var slect = d3.select("#selDataset").property("value");
+    console.log(slect);
+    init(slect);
+}
+// d3.select("#selDataset").on("change", changeEverything);
+
 
 // Initialize dashboard
 init()
